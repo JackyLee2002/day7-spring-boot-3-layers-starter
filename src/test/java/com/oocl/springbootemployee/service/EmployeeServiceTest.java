@@ -16,7 +16,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -25,7 +26,7 @@ class EmployeeServiceTest {
     public static final String INVALID_AGE_FOR_EMPLOYEE = "Invalid Age for Employee.";
 
     @Mock
-    EmployeeRepository  mockedEmployeeRepository;
+    EmployeeRepository mockedEmployeeRepository;
 
     @InjectMocks
     EmployeeService employeeService;
@@ -57,21 +58,40 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void should_throw_EmployeeAgeNotValidException_when_create_employee_with_age_lower_than_18(){
-        Employee tim = new Employee(10, "Peter", 9, Gender.MALE, 1.0);
+    void should_throw_EmployeeAgeNotValidException_when_create_employee_with_age_lower_than_18() {
+        //        given
+        Employee Peter = new Employee(10, "Peter", 9, Gender.MALE, 1.0);
+        //        when
+        //        then
         assertThrows(
                 EmployeeAgeNotValidException.class,
-                () -> employeeService.create(tim),
+                () -> employeeService.create(Peter),
                 INVALID_AGE_FOR_EMPLOYEE
         );
     }
 
     @Test
-    void should_throw_EmployeeAgeNotValidException_when_create_employee_with_age_above_65(){
-        Employee tim = new Employee(10, "Tim", 20000, Gender.MALE, 1.0);
+    void should_throw_EmployeeAgeNotValidException_when_create_employee_with_age_above_65() {
+        //        given
+        Employee Tim = new Employee(10, "Tim", 20000, Gender.MALE, 1.0);
+        //        when
+        //        then
         assertThrows(
                 EmployeeAgeNotValidException.class,
-                () -> employeeService.create(tim),
+                () -> employeeService.create(Tim),
+                INVALID_AGE_FOR_EMPLOYEE
+        );
+    }
+
+    @Test
+    void should_throw_EmployeeSalaryNotValidException_when_create_employee_with_age_above_oeq_equal_to_30_and_salary_below_20000() {
+        //        given
+        Employee Tim = new Employee(10, "Tim", 65, Gender.MALE, 0.1);
+        //        when
+        //        then
+        assertThrows(
+                EmployeeSalaryNotValidException.class,
+                () -> employeeService.create(Tim),
                 INVALID_AGE_FOR_EMPLOYEE
         );
     }
