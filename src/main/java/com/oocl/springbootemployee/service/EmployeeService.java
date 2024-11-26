@@ -1,8 +1,6 @@
 package com.oocl.springbootemployee.service;
 
-import com.oocl.springbootemployee.Exception.EmployeeAgeNotValidException;
-import com.oocl.springbootemployee.Exception.EmployeeNotActiveException;
-import com.oocl.springbootemployee.Exception.EmployeeSalaryNotValidException;
+import com.oocl.springbootemployee.exception.EmployeeNotFoundException;
 import com.oocl.springbootemployee.model.Employee;
 import com.oocl.springbootemployee.repository.IEmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -20,21 +18,14 @@ public class EmployeeService {
         return employeeRepository.getAll();
     }
 
-    public Employee create(Employee employee) {
-        if (employee.getAge() < 18 || employee.getAge() > 65) {
-            throw new EmployeeAgeNotValidException();
-        }
-        if (employee.getAge() >= 30 && employee.getSalary() < 20000) {
-            throw new EmployeeSalaryNotValidException();
-        }
+    public Employee creat(Employee employee) {
         return employeeRepository.addEmployee(employee);
     }
 
     public Employee update(Integer employeeId, Employee employee){
-        if (!employee.isActive()) {
-            throw new EmployeeNotActiveException();
-        }
         Employee employeeExisted = employeeRepository.getEmployeeById(employeeId);
+        if(employeeExisted == null)
+            throw new EmployeeNotFoundException();
 
         var nameToUpdate = employee.getName() == null ? employeeExisted.getName() : employee.getName();
         var ageToUpdate = employee.getAge() == null ? employeeExisted.getAge() : employee.getAge();

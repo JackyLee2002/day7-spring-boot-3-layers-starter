@@ -1,41 +1,25 @@
 package com.oocl.springbootemployee.service;
 
-import com.oocl.springbootemployee.Exception.EmployeeAgeNotValidException;
-import com.oocl.springbootemployee.Exception.EmployeeNotActiveException;
-import com.oocl.springbootemployee.Exception.EmployeeSalaryNotValidException;
 import com.oocl.springbootemployee.model.Employee;
 import com.oocl.springbootemployee.model.Gender;
 import com.oocl.springbootemployee.repository.EmployeeRepository;
+import com.oocl.springbootemployee.repository.IEmployeeRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
-
-    public static final String INVALID_SALARY_FOR_EMPLOYEE_AGED_BELOW_18_OR_ABOVE_65 = "Invalid Salary For Employee aged 30 or above.";
-    public static final String INVALID_AGE_FOR_EMPLOYEE = "Invalid Age for Employee.";
-    public static final String EMPLOYEE_NOT_ACTIVE = "Employee Not Active.";
-
-    @Mock
-    EmployeeRepository mockedEmployeeRepository;
-
-    @InjectMocks
-    EmployeeService employeeService;
-
     @Test
     void should_return_the_given_employees_when_getAllEmployees() {
         //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
         when(mockedEmployeeRepository.getAll()).thenReturn(List.of(new Employee(1, "Lucy", 18, Gender.FEMALE, 8000.0)));
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
 
         //when
         List<Employee> allEmployees = employeeService.getAllEmployees();
@@ -48,86 +32,15 @@ class EmployeeServiceTest {
     @Test
     void should_return_the_created_employee_when_create_given_a_employee() {
         //given
+        IEmployeeRepository mockedEmployeeRepository = mock(IEmployeeRepository.class);
         Employee lucy = new Employee(1, "Lucy", 18, Gender.FEMALE, 8000.0);
-        doReturn(lucy).when(mockedEmployeeRepository).addEmployee(any());
+        when(mockedEmployeeRepository.addEmployee(any())).thenReturn(lucy);
+        EmployeeService employeeService = new EmployeeService(mockedEmployeeRepository);
 
         //when
-        Employee createdEmployee = employeeService.create(lucy);
+        Employee createdEmployee = employeeService.creat(lucy);
 
         //then
         assertEquals("Lucy", createdEmployee.getName());
     }
-
-    @Test
-    void should_throw_EmployeeAgeNotValidException_when_create_employee_with_age_lower_than_18() {
-        //        given
-        Employee Peter = new Employee(10, "Peter", 9, Gender.MALE, 1.0);
-        //        when
-        //        then
-        assertThrows(
-                EmployeeAgeNotValidException.class,
-                () -> employeeService.create(Peter),
-                INVALID_AGE_FOR_EMPLOYEE
-        );
-        verify(mockedEmployeeRepository, never()).addEmployee(any());
-    }
-
-    @Test
-    void should_throw_EmployeeAgeNotValidException_when_create_employee_with_age_above_65() {
-        //        given
-        Employee Tim = new Employee(10, "Tim", 20000, Gender.MALE, 1.0);
-        //        when
-        //        then
-        assertThrows(
-                EmployeeAgeNotValidException.class,
-                () -> employeeService.create(Tim),
-                INVALID_AGE_FOR_EMPLOYEE
-        );
-        verify(mockedEmployeeRepository, never()).addEmployee(any());
-    }
-
-    @Test
-    void should_throw_EmployeeSalaryNotValidException_when_create_employee_with_age_above_or_equal_to_30_and_salary_below_20000() {
-        //        given
-        Employee Tim = new Employee(10, "Tim", 65, Gender.MALE, 0.1);
-        //        when
-        //        then
-        assertThrows(
-                EmployeeSalaryNotValidException.class,
-                () -> employeeService.create(Tim),
-                INVALID_SALARY_FOR_EMPLOYEE_AGED_BELOW_18_OR_ABOVE_65
-        );
-        verify(mockedEmployeeRepository, never()).addEmployee(any());
-    }
-
-    @Test
-    void should_employee_be_active_when_create_success() {
-        //given
-        Employee lucy = new Employee(1, "Lucy", 18, Gender.FEMALE, 8000.0);
-        doReturn(lucy).when(mockedEmployeeRepository).addEmployee(any());
-
-        //when
-        Employee createdEmployee = employeeService.create(lucy);
-
-        //then
-        assertEquals(true, createdEmployee.isActive());
-        verify(mockedEmployeeRepository).addEmployee(argThat(Employee::isActive));
-    }
-
-    @Test
-    void should_throw_EmployeeNotActiveException_when_create_employee_with_inactive_status() {
-        //        given
-        Employee Sam = new Employee(6, "Tim", 65, Gender.MALE, 30000.0, false);
-        employeeService.create(Sam);
-        Integer employeeId = 6;
-        //        when
-        //        then
-        assertThrows(
-                EmployeeNotActiveException.class,
-                () -> employeeService.update(employeeId, Sam),
-                EMPLOYEE_NOT_ACTIVE
-        );
-        verify(mockedEmployeeRepository, never()).updateEmployee(any(), any());
-    }
 }
-
