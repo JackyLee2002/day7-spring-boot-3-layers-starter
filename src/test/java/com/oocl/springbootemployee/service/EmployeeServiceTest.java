@@ -84,7 +84,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void should_throw_EmployeeSalaryNotValidException_when_create_employee_with_age_above_oeq_equal_to_30_and_salary_below_20000() {
+    void should_throw_EmployeeSalaryNotValidException_when_create_employee_with_age_above_or_equal_to_30_and_salary_below_20000() {
         //        given
         Employee Tim = new Employee(10, "Tim", 65, Gender.MALE, 0.1);
         //        when
