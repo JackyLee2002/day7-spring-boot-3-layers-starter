@@ -127,6 +127,7 @@ class EmployeeServiceTest {
                 () -> employeeService.update(employeeId, Sam),
                 EMPLOYEE_NOT_ACTIVE
         );
+        verify(mockedEmployeeRepository, never()).updateEmployee(any(), any());
     }
 }
 
