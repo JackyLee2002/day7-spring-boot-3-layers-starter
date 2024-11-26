@@ -2,6 +2,7 @@ package com.oocl.springbootemployee.controller;
 
 import java.util.List;
 
+import com.oocl.springbootemployee.Exception.CompanyNotFoundException;
 import com.oocl.springbootemployee.model.Company;
 import com.oocl.springbootemployee.model.Employee;
 import com.oocl.springbootemployee.repository.CompanyRepository;
@@ -57,6 +58,9 @@ public class CompanyController {
 
     @PutMapping("/{id}")
     public Company updateCompany(@PathVariable Integer id, @RequestBody Company company) {
+        if(companyRepository.getCompanyById(id) == null) {
+            throw new CompanyNotFoundException();
+        }
         return companyRepository.updateCompany(id, company);
     }
 
