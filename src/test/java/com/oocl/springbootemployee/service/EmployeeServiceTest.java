@@ -16,8 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -68,6 +67,7 @@ class EmployeeServiceTest {
                 () -> employeeService.create(Peter),
                 INVALID_AGE_FOR_EMPLOYEE
         );
+        verify(mockedEmployeeRepository, never()).addEmployee(any());
     }
 
     @Test
@@ -81,6 +81,7 @@ class EmployeeServiceTest {
                 () -> employeeService.create(Tim),
                 INVALID_AGE_FOR_EMPLOYEE
         );
+        verify(mockedEmployeeRepository, never()).addEmployee(any());
     }
 
     @Test
@@ -92,8 +93,9 @@ class EmployeeServiceTest {
         assertThrows(
                 EmployeeSalaryNotValidException.class,
                 () -> employeeService.create(Tim),
-                INVALID_AGE_FOR_EMPLOYEE
+                INVALID_SALARY_FOR_EMPLOYEE_AGED_BELOW_18_OR_ABOVE_65
         );
+        verify(mockedEmployeeRepository, never()).addEmployee(any());
     }
 }
 
